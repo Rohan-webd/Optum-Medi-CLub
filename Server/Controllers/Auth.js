@@ -36,13 +36,15 @@ const passcrct = await bcrypt.compare(req.body.password,ExistingPatient?.Passwor
 if(!passcrct){
     res.status(500).json({message:"INVALID CREDENTIALS"});
 }
+else{
+const token = await ExistingPatient.generateAuthToken();
 
-const token = jwt.sign({id:ExistingPatient?._id},"adiilmnvbh")
 
-const { Password , ...OtherDetails} = ExistingPatient._doc;
 res.cookie("AccessToken",token,{
-  httpOnly:true
-}).status(200).json({...OtherDetails});
+  httpOnly:true,
+  expires:new Date(Date.now()+2589200000)
+}).status(200).json(ExistingPatient);
+}
 }
 catch(err){
     next(err);

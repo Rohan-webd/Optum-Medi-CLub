@@ -77,6 +77,7 @@ DoctorSchema.pre('save',async function(next){
   coordinates: [loc[0].longitude,loc[0].latitude]
  }
   this.Address = undefined;
+  this.Upvotes = 0;
   next();
 })
 const Doctor = mongoose.model("Doctor", DoctorSchema);

@@ -1,20 +1,29 @@
 import jwt from "jsonwebtoken";
+import Patient from "../models/Patient.js";
 
-const VerifyToken = (req,res,next)=>{
+const VerifyToken = async (req,res,next)=>{
+
+    try{
 
 const token = req.cookies.AccessToken;
-if(!token){
+const verifytoken = jwt.verify(token,"kfknpadfoeovnqov");
+const rootPatient = await Patient.findOne({_id:verifytoken._id,"tokens.token":token });
 
-    return res.status(500).json({message:"Your are not authenticated"})
+if(!rootPatient){
+    throw new Error('Patient Not Found');
 }
+req.token = token;
+req.rootPatient =rootPatient;
+req.Patientid = rootPatient._id;
 
-jwt.verify(token,"adiilmnvbh",(err,Doc)=>{
-
-if(err) return err;
-req.Doctor = Doc;
 next();
 
-});
+    }
+    catch(err){
+        res.status(401).send("You Are Unauthorized:NO token Found");
+        console.log(err);
+        
+    }
 
 };
 
